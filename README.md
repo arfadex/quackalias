@@ -12,17 +12,17 @@ From here, follow these steps closely:
 
 -  From DuckDuckGo’s email autofill page, right-click anywhere on the page and select “Inspect” from the context menu.
 
-![](images/image1.jpg)
+<img src="images/image1.jpg" alt="Image 1" width="400" height="300">
 
 - In the developer tools panel, click the “Network” tab at the top.
 
-![](images/image2.jpg)
+<img src="images/image2.jpg" alt="Image 2" width="400" height="300">
 
 - On the DuckDuckGo site next to the sidebar, click the “Generate Private Duck Address” button.
 
 - In the developer panel sidebar, click on the word “addresses.”
 
-![](images/image3.jpg)
+<img src="images/image3.jpg" alt="Image 3" width="400" height="300">
 
 - Scroll down until you see the words “authorization: Bearer,” followed by a long string of letters and numbers.
 

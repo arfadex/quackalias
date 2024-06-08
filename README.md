@@ -1,6 +1,7 @@
 # QuackAlias
 
 QuackAlias is a simple email alias generator web application.
+
 ## Usage
 
 **1. Obtain the DuckDuckGo API Key:**
@@ -12,17 +13,17 @@ From here, follow these steps closely:
 
 -  From DuckDuckGo’s email autofill page, right-click anywhere on the page and select “Inspect” from the context menu.
 
-<img src="images/image1.jpg" alt="Image 1" width="450" height="350">
+![Image 1](images/image1.jpg)
 
 - In the developer tools panel, click the “Network” tab at the top.
 
-<img src="images/image2.jpg" alt="Image 2" width="450" height="350">
+![Image 2](images/image2.jpg)
 
 - On the DuckDuckGo site next to the sidebar, click the “Generate Private Duck Address” button.
 
 - In the developer panel sidebar, click on the word “addresses.”
 
-<img src="images/image3.jpg" alt="Image 3" width="450" height="350">
+![Image 3](images/image3.jpg)
 
 - Scroll down until you see the words “authorization: Bearer,” followed by a long string of letters and numbers.
 
@@ -48,20 +49,30 @@ In the `backend` directory, create a file named `config.js` and add the followin
 ```javascript
 // config.js
 export const DUCKDUCKGO_API_KEY = '';
+export const MONGODB_URI = '':
 ```
 
 **5. Paste the API key into the config.js file:**
 
 Paste the copied API key into the `DUCKDUCKGO_API_KEY` variable within the `config.js` file in the `backend` directory.
 
-**6. Start the server:**
+**6. Set up MongoDB Atlas:**
+
+   - Create an account on MongoDB Atlas and set up a cluster.
+   - Create a database and a collection (e.g., `emailAliases`).
+   - Obtain the connection string for your MongoDB Atlas cluster.
+
+**7. Update backend/server.mjs to connect to MongoDB Atlas:**
+   - Replace `MONGODB_URI` variable in `config.js` with your MongoDB Atlas connection string.
+
+**8. Start the server:**
 
 ```bash
 cd ../backend
 node server.mjs
 ```
 
-**7. Open `index.html` in your browser to use QuackAlias.**
+**9. Open `index.html` in your browser to use QuackAlias.**
 
 ## Features
 
@@ -72,11 +83,9 @@ node server.mjs
 ## Technologies Used
 
 - Frontend: HTML, CSS, JavaScript
-- Backend: Node.js, Express.js
+- Backend: Node.js, Express.js, MongoDB Atlas
 - API: DuckDuckGo Email Alias API
 
 ## Contributing
 
 Contributions are welcome! Please fork this repository and create a pull request with your changes. For major changes, please open an issue first to discuss what you would like to change.
-
-

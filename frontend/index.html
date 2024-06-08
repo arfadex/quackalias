@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuackAlias</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,10 +23,16 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
             text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
         }
 
         h1, h2 {
             margin-bottom: 20px;
+            color: #007BFF;
         }
 
         button {
@@ -36,6 +42,7 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         button:hover {
@@ -47,6 +54,11 @@
             font-size: 1.2em;
             color: #007BFF;
             cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        #aliasContainer:hover {
+            color: #0056b3;
         }
 
         ul {
@@ -62,6 +74,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        ul li:hover {
+            background: #d6d6d6;
         }
 
         .delete-btn {
@@ -71,6 +88,7 @@
             padding: 5px 10px;
             border-radius: 3px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         .delete-btn:hover {
@@ -86,6 +104,7 @@
             top: 20px;
             right: 20px;
             display: none;
+            transition: display 0.5s;
         }
     </style>
 </head>
@@ -132,47 +151,35 @@
                     });
 
                     const data = await response.json();
-                    console.log('Generated Alias Data:', data);
 
                     if (!response.ok) {
                         throw new Error(`Error: ${data.message || response.statusText}`);
                     }
 
                     return data.address;
-
                 } catch (error) {
                     console.error('Error generating alias:', error);
                     throw error;
                 }
             }
 
-            function addToHistory(alias) {
-                const li = document.createElement('li');
-                li.innerHTML = `<span>${alias}</span> <button class="delete-btn">Delete</button>`;
-                aliasHistory.appendChild(li);
+            async function addToHistory(alias) {
+                try {
+                    const response = await fetch('http://localhost:3001/api/save-alias', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ alias })
+                    });
 
-                // Add event listener for copy and delete
-                li.querySelector('span').addEventListener('click', function() {
-                    copyToClipboard(alias);
-                    showNotification();
-                });
+                    if (!response.ok) {
+                        throw new Error('Error saving alias');
+                    }
 
-                li.querySelector('.delete-btn').addEventListener('click', function() {
-                    deleteFromHistory(alias);
-                    aliasHistory.removeChild(li);
-                });
-
-                // Save to localStorage
-                let history = JSON.parse(localStorage.getItem('aliasHistory')) || [];
-                history.push(alias);
-                localStorage.setItem('aliasHistory', JSON.stringify(history));
-            }
-
-            function loadHistory() {
-                let history = JSON.parse(localStorage.getItem('aliasHistory')) || [];
-                history.forEach(alias => {
                     const li = document.createElement('li');
-                    li.innerHTML = `<span>${alias}</span> <button class="delete-btn">Delete</button>`;
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.innerHTML = `<span>${alias}</span> <button class="btn btn-danger btn-sm delete-btn">Delete</button>`;
                     aliasHistory.appendChild(li);
 
                     // Add event listener for copy and delete
@@ -181,11 +188,40 @@
                         showNotification();
                     });
 
-                    li.querySelector('.delete-btn').addEventListener('click', function() {
-                        deleteFromHistory(alias);
+                    li.querySelector('.delete-btn').addEventListener('click', async function() {
+                        await deleteFromHistory(alias);
                         aliasHistory.removeChild(li);
                     });
-                });
+                } catch (error) {
+                    console.error('Error saving alias:', error);
+                }
+            }
+
+            async function loadHistory() {
+                try {
+                    const response = await fetch('http://localhost:3001/api/get-aliases');
+                    const history = await response.json();
+
+                    history.forEach(alias => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.innerHTML = `<span>${alias}</span> <button class="btn btn-danger btn-sm delete-btn">Delete</button>`;
+                        aliasHistory.appendChild(li);
+
+                        // Add event listener for copy and delete
+                        li.querySelector('span').addEventListener('click', function() {
+                            copyToClipboard(alias);
+                            showNotification();
+                        });
+
+                        li.querySelector('.delete-btn').addEventListener('click', async function() {
+                            await deleteFromHistory(alias);
+                            aliasHistory.removeChild(li);
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error loading history:', error);
+                }
             }
 
             function copyToClipboard(text) {
@@ -204,13 +240,32 @@
                 }, 2000);
             }
 
-            function deleteFromHistory(alias) {
-                let history = JSON.parse(localStorage.getItem('aliasHistory')) || [];
-                history = history.filter(item => item !== alias);
-                localStorage.setItem('aliasHistory', JSON.stringify(history));
+            async function deleteFromHistory(alias) {
+                try {
+                    const response = await fetch('http://localhost:3001/api/delete-alias', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ alias })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error deleting alias');
+                    }
+                } catch (error) {
+                    console.error('Error deleting alias:', error);
+                }
             }
+
             loadHistory();
         });
     </script>
+<script 
+color="255,255,255" 
+opacity='0.9' 
+count="200" 
+src="canvas-nest.js">
+</script>
 </body>
 </html>

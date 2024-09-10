@@ -32,7 +32,7 @@ From here, follow these steps closely:
 **2. Clone the repository:**
 
 ```bash
-git clone https://github.com/Megane0103/quackalias.git
+git clone https://github.com/arfadex/quackalias.git
 ```
 
 **3. Install dependencies for backend:**
